@@ -3,11 +3,15 @@ package ru.javawebinar.topjava.util;
 import ru.javawebinar.topjava.model.UserMeal;
 import ru.javawebinar.topjava.model.UserMealWithExceed;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * GKislin
@@ -29,7 +33,24 @@ public class UserMealsUtil {
     }
 
     public static List<UserMealWithExceed>  getFilteredWithExceeded(List<UserMeal> mealList, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
-        // TODO return filtered list with correctly exceeded field
-        return null;
+
+        Map <LocalDate, Integer> caloriesByDatesMap = new HashMap<>();
+        for (UserMeal meal : mealList) {
+            if (!caloriesByDatesMap.containsKey(meal.getDateTime().toLocalDate())) {
+                caloriesByDatesMap.put(meal.getDateTime().toLocalDate(), meal.getCalories());
+            }
+            else {
+                Integer cal = caloriesByDatesMap.get(meal.getDateTime().toLocalDate());
+                cal += meal.getCalories();
+                caloriesByDatesMap.put(meal.getDateTime().toLocalDate(), cal);
+            }
+        }
+
+        List<UserMealWithExceed> mealListFiltered = mealList.stream().
+                filter(meal -> TimeUtil.isBetween(meal.getDateTime().toLocalTime(), startTime, endTime)).
+                map(meal -> new UserMealWithExceed(meal.getDateTime(), meal.getDescription(), meal.getCalories(), caloriesByDatesMap.get(meal.getDateTime().toLocalDate()) > caloriesPerDay)).
+                collect(Collectors.toList());
+
+        return mealListFiltered;
     }
 }
