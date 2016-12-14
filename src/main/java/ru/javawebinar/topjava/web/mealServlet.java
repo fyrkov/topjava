@@ -3,20 +3,16 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealsMemoryDAO;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.slf4j.LoggerFactory.getLogger;
-import static ru.javawebinar.topjava.model.MealsMemoryDAO.getMealsMemoryDAO;
+import static ru.javawebinar.topjava.model.MealsMemoryDAO.getInstance;
 import static ru.javawebinar.topjava.util.MealsUtil.*;
 
 /**
@@ -24,7 +20,7 @@ import static ru.javawebinar.topjava.util.MealsUtil.*;
  */
 public class mealServlet extends HttpServlet {
 
-    MealsMemoryDAO dao = getMealsMemoryDAO();
+    MealsMemoryDAO dao = getInstance();
 
     private static final Logger LOG = getLogger(UserServlet.class);
 
@@ -32,12 +28,9 @@ public class mealServlet extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         PrintWriter pw = response.getWriter();
         //pw.println("This is mealServlet");
-        //request.setAttribute("mealsMemorylist", getWithExceeded(getMealsMemoryDAO().readAll(), 2000));
         //LOG.debug("redirect to /meals.jsp with mealsMemorylist as Attribute");
-        //request.getRequestDispatcher("/meals.jsp").forward(request, response);
 
         String forward;
-        //String action = null;
         String action = request.getParameter("action");
 
         if (action!=null && action.equalsIgnoreCase("delete")){
@@ -52,7 +45,6 @@ public class mealServlet extends HttpServlet {
             forward = "/meals.jsp";
         } else {
             forward = "/meals.jsp";
-            //request.setAttribute("mealsMemorylist", getWithExceeded(dao.readAll(), 2000));
         }
         request.getSession().setAttribute("mealsMemorylist", getWithExceeded(dao.readAll(), 2000));
         request.getRequestDispatcher(forward).forward(request, response);
@@ -63,6 +55,7 @@ public class mealServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
 
         String dateString = request.getParameter("dateTime");
+        if (dateString.isEmpty()) dateString = LocalDateTime.now().toString();
         String parts[] = dateString.split("-|T|:");
         for (String part: parts) {
             System.out.println(part);

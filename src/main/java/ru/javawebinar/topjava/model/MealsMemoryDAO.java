@@ -1,9 +1,12 @@
 package ru.javawebinar.topjava.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by user on 12.12.2016.
@@ -12,34 +15,33 @@ public class MealsMemoryDAO implements MealsDAO {
 
     private MealsMemoryDAO() {}
     private static boolean isCreated = false;
-    private static MealsMemoryDAO mmDAO;
+    private static MealsMemoryDAO instance;
 
-    public static MealsMemoryDAO getMealsMemoryDAO() {
+    public static MealsMemoryDAO getInstance() {
         if (!isCreated) {
-            mmDAO = new MealsMemoryDAO();
+            instance = new MealsMemoryDAO();
             isCreated = true;
         }
-        return mmDAO;
+        return instance;
     }
 
-    private static Integer idCounter=0;
+    private static AtomicInteger idCounter = new AtomicInteger(0);
     public static Integer getIdCounter() {
-        return idCounter++;
+        return idCounter.getAndIncrement();
     }
 
     private static Map<Integer, Meal> meals = new ConcurrentHashMap<>();
     static {
-        int id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 30, 10, 0), "Завтрак", 500));
-        id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 30, 13, 0), "Обед", 1000));
-        id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 30, 20, 0), "Ужин", 500));
-        id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 31, 10, 0), "Завтрак", 1000));
-        id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 31, 13, 0), "Обед", 500));
-        id = getIdCounter(); meals.put(id, new Meal(id, LocalDateTime.of(2015, Month.MAY, 31, 20, 0), "Ужин", 510));
-        for (int i=0;i<10;i++) {
-            id = getIdCounter();
-            meals.put(id, new Meal(id,
-            LocalDateTime.of(2015, Month.of((int)Math.round(Math.random()*11+1)),  (int)Math.round(Math.random()*27+1), (int)Math.round(Math.random()*23), 0),
-            "lunch", (int)Math.round(Math.random()*1300+300)));
+        int id;
+        String s[] = {"Завтрак", "Обед", "Ужин"};
+        for (int i=0;i<5;i++) {
+            LocalDate ld = LocalDate.of(2015, Month.of((int) Math.round(Math.random() * 11 + 1)), (int) Math.round(Math.random() * 27 + 1));
+            for (int j = 1; j <= 3; j++) {
+                LocalTime lt = LocalTime.of((int) Math.round(Math.random() * 4 + 6*j), 0);
+                LocalDateTime ldt = LocalDateTime.of(ld, lt);
+                id = getIdCounter();
+                meals.put(id, new Meal(id, ldt, s[j-1], (int) Math.round(Math.random() * 800 + 300)));
+            }
         }
     }
 

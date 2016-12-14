@@ -8,11 +8,11 @@ import java.util.List;
  */
 public interface MealsDAO {
 
-    public  void create (LocalDateTime dateTime, String description, int calories);
-    public  Meal read (Integer id);
-    public  List<Meal> readAll();
-    public  void update (Integer id, LocalDateTime dateTime, String description, int calories);
-    public  void delete (Integer id);
+    void create(LocalDateTime dateTime, String description, int calories);
+    Meal read(Integer id);
+    List<Meal> readAll();
+    void update(Integer id, LocalDateTime dateTime, String description, int calories);
+    void delete(Integer id);
 
 
 }

@@ -1,7 +1,4 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ page import="java.util.List" %>
-<%@ page import="ru.javawebinar.topjava.model.MealWithExceed" %>
-<%@ page import="ru.javawebinar.topjava.model.Meal" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %><%--
   Created by IntelliJ IDEA.
   User: user
@@ -9,7 +6,6 @@
   Time: 12:34
   To change this template use File | Settings | File Templates.
 --%>
-
 
 <html>
 <head>
@@ -21,18 +17,18 @@
 <form method="POST" action="meals" name="frmAddMeal">
     ID : <input
         type="text" readonly="readonly" name="id"
-        value="<c:out value="${meal.getId()}" />" /> <br />
+        value="<c:out value="${meal.getId()}" />"/> <br/>
     Дата и время: <input
         type="datetime-local" name="dateTime"
-        value="<c:out value="${meal.getDateTime()}" />" /> <br />
+        value="<c:out value="${meal.getDateTime()}" />"/> <br/>
     Описание : <input
         type="text" name="description"
-        value="<c:out value="${meal.getDescription()}" />" /> <br />
+        value="<c:out value="${meal.getDescription()}" />"/> <br/>
     Калорийность : <input
         type="number" name="calories"
-        value="<c:out value="${meal.getCalories()}" />" /> <br />
+        value="<c:out value="${meal.getCalories()}" />"/> <br/>
     <input
-        type="submit" value="Submit" />
+            type="submit" value="Submit"/>
 </form>
 
 <h2>Список еды</h2>
@@ -44,19 +40,33 @@
         <th>Описание</th>
         <th>Калории</th>
     </tr>
-        <% List<MealWithExceed> list = (List<MealWithExceed>) request.getSession().getAttribute("mealsMemorylist");
-        for (MealWithExceed meal : list) { %>
-    <tr>
-        <% if (meal.isExceed()) {%> <tr style="background-color:#ffcccc;"> <% } else {%> <tr style="background-color:#e6ffe6;"> <%} %>
-        <td><%=meal.getId()%></td>
-        <td><%=meal.getDate()%> &nbsp;<%=meal.getTime()%></td>
-        <td><%=meal.getDescription()%> </td>
-        <td><%=meal.getCalories()%> </td>
-        <td><a href="meals?action=edit&mealId=<c:out value="<%=meal.getId()%>"/>">Update</a></td>
-        <td><a href="meals?action=delete&mealId=<c:out value="<%=meal.getId()%>"/>">Delete</a></td>
-    </tr>
-        <%}
-        %>
+
+    <c:forEach var="meal" items="${mealsMemorylist}">
+        <tr>
+        <c:if test="${meal.isExceed()}"> <tr style="background-color:#ffcccc;">
+        </c:if>
+        <c:if test="${!meal.isExceed()}"> <tr style="background-color:#e6ffe6;">
+        </c:if>
+        <td>${meal.getId()}</td>
+        <td>${meal.getDate()} &nbsp;${meal.getTime()}</td>
+        <td>${meal.getDescription()} </td>
+        <td>${meal.getCalories()} </td>
+        <td>
+            <form action="meals">
+                <input type="hidden" name="action" value="edit"/>
+                <input type="hidden" name="mealId" value="${meal.getId()}"/>
+                <button type="submit">Update</button>
+            </form>
+        </td>
+        <td>
+            <form action="meals">
+                <input type="hidden" name="action" value="delete"/>
+                <input type="hidden" name="mealId" value="${meal.getId()}"/>
+                <button type="submit">Delete</button>
+            </form>
+        </td>
+        </tr>
+    </c:forEach>
     </tbody>
 </table>
 <p>&nbsp;</p>
