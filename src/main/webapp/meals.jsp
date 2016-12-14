@@ -28,7 +28,7 @@
         type="number" name="calories"
         value="<c:out value="${meal.getCalories()}" />"/> <br/>
     <input
-            type="submit" value="Submit"/>
+            type="submit" name="action" value="submit"/>
 </form>
 
 <h2>Список еды</h2>
@@ -53,16 +53,14 @@
         <td>${meal.getCalories()} </td>
         <td>
             <form action="meals">
-                <input type="hidden" name="action" value="edit"/>
                 <input type="hidden" name="mealId" value="${meal.getId()}"/>
-                <button type="submit">Update</button>
+                <button type="submit" name="action" value="edit">Update</button>
             </form>
         </td>
         <td>
-            <form action="meals">
-                <input type="hidden" name="action" value="delete"/>
+            <form action="meals" method="POST">
                 <input type="hidden" name="mealId" value="${meal.getId()}"/>
-                <button type="submit">Delete</button>
+                <button type="submit" name="action" value="delete">Delete</button>
             </form>
         </td>
         </tr>

@@ -34,7 +34,7 @@ public class MealsMemoryDAO implements MealsDAO {
     static {
         int id;
         String s[] = {"Завтрак", "Обед", "Ужин"};
-        for (int i=0;i<5;i++) {
+        for (int i=0;i<4;i++) {
             LocalDate ld = LocalDate.of(2015, Month.of((int) Math.round(Math.random() * 11 + 1)), (int) Math.round(Math.random() * 27 + 1));
             for (int j = 1; j <= 3; j++) {
                 LocalTime lt = LocalTime.of((int) Math.round(Math.random() * 4 + 6*j), 0);
