@@ -25,11 +25,12 @@
 </head>
 <body>
 <section>
-    <h2><a href="index.html">Home</a></h2>
+    <h2><a href="index.jsp">Home</a></h2>
     <h2>${param.action == 'create' ? 'Create meal' : 'Edit meal'}</h2>
     <hr>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="meals">
+        <input type="hidden" name="action" value="edit">
         <input type="hidden" name="id" value="${meal.id}">
         <dl>
             <dt>DateTime:</dt>

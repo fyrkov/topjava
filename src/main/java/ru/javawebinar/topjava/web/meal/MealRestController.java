@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.AuthorizedUser;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealWithExceed;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
@@ -16,7 +15,6 @@ import java.time.LocalTime;
 import java.util.Collections;
 import java.util.List;
 
-import static ru.javawebinar.topjava.util.MealsUtil.getFilteredByDatesWithExceeded;
 import static ru.javawebinar.topjava.util.MealsUtil.getWithExceeded;
 
 /**
@@ -41,7 +39,7 @@ public class MealRestController {
     public List<MealWithExceed> getAll(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         LOG.info("getAll");
         if (!service.getAll(AuthorizedUser.id()).isEmpty()) {
-            return getFilteredByDatesWithExceeded(service.getAll(AuthorizedUser.id()), startDate, startTime, endDate, endTime, AuthorizedUser.getCaloriesPerDay());
+            return getWithExceeded(service.getAll(AuthorizedUser.id(), startDate, startTime, endDate, endTime), AuthorizedUser.getCaloriesPerDay());
         } else return Collections.emptyList();
     }
 

@@ -17,26 +17,22 @@
 </head>
 <body>
 <section>
-    <h2><a href="index.html">Home</a></h2>
-    <form method="post" action="filter">
-        <dl>
-            <dt>DateFrom:</dt>
-            <dd><input type="date" name="dateFrom"></dd>
-        </dl>
-        <dl>
-            <dt>DateTo:</dt>
-            <dd><input type="date" name="dateTo"></dd>
-        </dl>
-        <dl>
-            <dt>TimeFrom:</dt>
-            <dd><input type="time" name="timeFrom"></dd>
-        </dl>
-        <dl>
-            <dt>TimeTo:</dt>
-            <dd><input type="time" name="timeTo"></dd>
-        </dl>
+    <h2><a href="index.jsp">Home</a></h2>
+    <form method="post" action="meals">
+        <input type="hidden" name="action" value="filter">
+        <ul>
+            <c:set var="ld1" value='${requestScope["ld1"]}' />
+            <c:set var="ld2" value='${requestScope["ld2"]}' />
+            <c:set var="lt1" value='${requestScope["lt1"]}' />
+            <c:set var="lt2" value='${requestScope["lt2"]}' />
+            <li>DateFrom:&nbsp;<input type="date" value="${ld1}" name="dateFrom">&nbsp;</li>
+            <li>TimeFrom:&nbsp;<input type="time" value="${lt1}" name="timeFrom"></li>
+            <li>DateTo:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="date" value="${ld2}" name="dateTo">&nbsp;</li>
+            <li>TimeTo:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="time" value="${lt2}" name="timeTo"><br></li>
+        </ul>
         <button type="submit">filter</button>
     </form>
+
     <h2>Meal list</h2>
     <a href="meals?action=create">Add Meal</a>
     <hr>

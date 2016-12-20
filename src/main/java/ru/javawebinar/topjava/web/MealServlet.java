@@ -2,16 +2,12 @@ package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.AuthorizedUser;
-import ru.javawebinar.topjava.SpringMain;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
 
@@ -21,7 +17,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Objects;
@@ -35,6 +33,8 @@ public class MealServlet extends HttpServlet {
 
     private MealRestController mealRestController;
     private AdminRestController adminUserController;
+    LocalDate ld1=LocalDate.ofEpochDay(0), ld2=LocalDate.now();
+    LocalTime lt1=LocalTime.MIN, lt2=LocalTime.of(23,59);
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -51,16 +51,42 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
+        String action = request.getParameter("action");
 
-        Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.valueOf(request.getParameter("calories")), AuthorizedUser.id());
+        if (action.equals("edit")) {
+            Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
+                    LocalDateTime.parse(request.getParameter("dateTime")),
+                    request.getParameter("description"),
+                    Integer.valueOf(request.getParameter("calories")), AuthorizedUser.id());
 
-        LOG.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-        if (meal.isNew()) mealRestController.create(meal);
-        else mealRestController.update(meal, meal.getId(), AuthorizedUser.id());
-        response.sendRedirect("meals");
+            LOG.info(meal.isNew() ? "Create {}" : "Update {}", meal);
+            if (meal.isNew()) mealRestController.create(meal);
+            else mealRestController.update(meal, meal.getId(), AuthorizedUser.id());
+            response.sendRedirect("meals");
+        } else if (action.equals("filter")) {
+
+            if (!request.getParameter("dateFrom").isEmpty()) {
+                ld1 = LocalDate.parse(request.getParameter("dateFrom"));
+            }
+            if (!request.getParameter("dateTo").isEmpty()) {
+                ld2 = LocalDate.parse(request.getParameter("dateTo"));
+            }
+            if (!request.getParameter("timeFrom").isEmpty()) {
+                lt1 = LocalTime.parse(request.getParameter("timeFrom"));
+            }
+            if (!request.getParameter("timeTo").isEmpty()) {
+                lt2 = LocalTime.parse(request.getParameter("timeTo"));
+            }
+            LOG.info("getAll within period from "+ld1+lt1+" to "+ld2+lt2);
+            request.setAttribute("meals",
+                    mealRestController.getAll(ld1, lt1, ld2, lt2));
+            request.setAttribute("ld1", ld1);
+            request.setAttribute("ld2", ld2);
+            request.setAttribute("lt1", lt1);
+            request.setAttribute("lt2", lt2);
+            request.getRequestDispatcher("/meals.jsp").forward(request, response);
+
+        }
     }
 
     @Override
@@ -70,7 +96,11 @@ public class MealServlet extends HttpServlet {
         if (action == null) {
             LOG.info("getAll");
             request.setAttribute("meals",
-                    mealRestController.getAll());
+                    mealRestController.getAll(ld1,lt1,ld2,lt2));
+            request.setAttribute("ld1", ld1);
+            request.setAttribute("ld2", ld2);
+            request.setAttribute("lt1", lt1);
+            request.setAttribute("lt2", lt2);
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
 
         } else if ("delete".equals(action)) {
