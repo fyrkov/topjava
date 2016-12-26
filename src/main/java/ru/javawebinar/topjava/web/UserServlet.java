@@ -1,7 +1,9 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import ru.javawebinar.topjava.AuthorizedUser;
+import ru.javawebinar.topjava.util.DbPopulator;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +19,8 @@ import static org.slf4j.LoggerFactory.getLogger;
  * Date: 19.08.2014
  */
 public class UserServlet extends HttpServlet {
+    @Autowired
+    private DbPopulator dbPopulator;
     private static final Logger LOG = getLogger(UserServlet.class);
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

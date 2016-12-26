@@ -1,5 +1,7 @@
 DROP TABLE IF EXISTS user_roles;
+DROP TABLE IF EXISTS meals;
 DROP TABLE IF EXISTS users;
+
 DROP SEQUENCE IF EXISTS global_seq;
 
 CREATE SEQUENCE global_seq START 100000;
@@ -15,6 +17,17 @@ CREATE TABLE users
   calories_per_day INTEGER DEFAULT 2000 NOT NULL
 );
 CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
+
+CREATE TABLE meals
+(
+  id          INTEGER PRIMARY KEY DEFAULT nextval('global_seq'),
+  userId      INT       NOT NULL,
+  dateTime    TIMESTAMP NOT NULL,
+  description VARCHAR,
+  calories    INT,
+  CONSTRAINT userId FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
+);
+
 
 CREATE TABLE user_roles
 (
